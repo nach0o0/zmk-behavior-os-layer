@@ -1,13 +1,12 @@
 #define DT_DRV_COMPAT zmk_behavior_os_layer
 
+
 #include <zephyr/device.h>
 #include <drivers/behavior.h>
 #include <zephyr/logging/log.h>
-#include <zephyr/kernel.h>
-#include <zmk/behavior.h>
+
 #include <zmk/keymap.h>
-#include <zmk/layers.h>
-#include <zmk/keycode.h>
+#include <zmk/behavior.h>
 #include <hid.h>
 
 #if DT_HAS_COMPAT_STATUS_OKAY(DT_DRV_COMPAT)
