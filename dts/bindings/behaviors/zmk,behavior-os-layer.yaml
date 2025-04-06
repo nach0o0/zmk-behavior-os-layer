@@ -1,0 +1,27 @@
+# SPDX-License-Identifier: MIT
+
+description: Custom behavior to switch layers based on OS.
+
+compatible: "zmk,behavior-os-layer"
+
+include: zero_param.yaml
+
+properties:
+  linux-layer:
+    type: int
+    required: false
+  windows-layer:
+    type: int
+    required: false
+  macos-layer:
+    type: int
+    required: false
+  android-layer:
+    type: int
+    required: false
+  ios-layer:
+    type: int
+    required: false
+  default-layer:
+    type: int
+    required: false
