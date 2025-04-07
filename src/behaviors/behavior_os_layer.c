@@ -8,7 +8,7 @@
 
 #include <zmk/keymap.h>
 #include <zmk/behavior.h>
-#include <hid.h>
+#include <os_hid.h>
 
 LOG_MODULE_REGISTER(behavior_os_layer, CONFIG_ZMK_LOG_LEVEL);
 

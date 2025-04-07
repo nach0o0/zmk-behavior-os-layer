@@ -1,4 +1,4 @@
-#include <hid.h>
+#include <os_hid.h>
 #include <raw_hid/events.h>
 
 #include <zephyr/kernel.h>
