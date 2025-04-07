@@ -8,6 +8,8 @@
 #include <zmk/keymap.h>
 #include <zmk/behavior.h>
 
+LOG_MODULE_DECLARE(zmk, CONFIG_ZMK_LOG_LEVEL);
+
 #if DT_HAS_COMPAT_STATUS_OKAY(DT_DRV_COMPAT)
 
 static char current_host_os[30] = "windows";
@@ -24,6 +26,7 @@ struct behavior_os_layer_config {
 static int behavior_os_layer_keymap_binding_pressed(struct zmk_behavior_binding *binding,
                                                     struct zmk_behavior_binding_event event) {
                                                         
+    LOG_DBG("Behavior '%s' pressed. Current hardcoded OS: %s", binding->behavior_dev->name, current_host_os);
     const struct behavior_os_layer_config *cfg = zmk_behavior_get_binding(binding->behavior_dev)->config;
     
     int layer_to_activate = cfg->default_layer;
@@ -42,6 +45,7 @@ static int behavior_os_layer_keymap_binding_pressed(struct zmk_behavior_binding 
         layer_to_activate = cfg->default_layer;
     }
 
+    LOG_DBG("position %d layer %d ", event.position, layer_to_activate);
     zmk_keymap_layer_activate(layer_to_activate);
     return ZMK_BEHAVIOR_OPAQUE;
 }
@@ -67,6 +71,7 @@ static int behavior_os_layer_keymap_binding_released(struct zmk_behavior_binding
         layer_to_deactivate = cfg->default_layer;
     }
 
+    LOG_DBG("Deactivating layer: %d", layer_to_deactivate);
     zmk_keymap_layer_deactivate(layer_to_deactivate);
     return ZMK_BEHAVIOR_OPAQUE;
 }

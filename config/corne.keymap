@@ -22,6 +22,29 @@
 };
 
 / {
+    behaviors {
+        os_win_l1: to_os_winl1_layer {
+            compatible = "zmk,behavior-os-layer";
+            #binding-cells = <0>;
+            linux-layer = <2>;
+            windows-layer = <1>;
+            macos-layer = <2>;
+            android-layer = <2>;
+            ios-layer = <2>;
+            default-layer = <2>;
+        };
+        os_win_l2: to_os_winl2_layer {
+            compatible = "zmk,behavior-os-layer";
+            #binding-cells = <0>;
+            linux-layer = <1>;
+            windows-layer = <2>;
+            macos-layer = <1>;
+            android-layer = <1>;
+            ios-layer = <1>;
+            default-layer = <1>;
+        };
+    };
+
     keymap {
         compatible = "zmk,keymap";
 
