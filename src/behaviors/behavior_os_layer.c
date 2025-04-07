@@ -7,9 +7,10 @@
 
 #include <zmk/keymap.h>
 #include <zmk/behavior.h>
-#include <hid.h>
 
 #if DT_HAS_COMPAT_STATUS_OKAY(DT_DRV_COMPAT)
+
+static char current_host_os[30] = "windows";
 
 struct behavior_os_layer_config {
     int linux_layer;
