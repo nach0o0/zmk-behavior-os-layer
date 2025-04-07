@@ -1,29 +1,25 @@
 / {
-    // Füge hier alle deine benutzerdefinierten Behaviors aus der corne.keymap ein
     behaviors {
-        // Referenziere die Nodes, die du in corne.keymap definiert hast
         os_win_l1: to_os_winl1_layer {
             compatible = "zmk,behavior-os-layer";
-            #binding-cells = ;
-            linux-layer = ;
-            windows-layer = ;
-            macos-layer = ;
-            android-layer = ;
-            ios-layer = ;
-            default-layer = ;
+            #binding-cells = <0>;
+            linux-layer = <2>;
+            windows-layer = <1>;
+            macos-layer = <2>;
+            android-layer = <2>;
+            ios-layer = <2>;
+            default-layer = <2>;
         };
 
         os_win_l2: to_os_winl2_layer {
             compatible = "zmk,behavior-os-layer";
-            #binding-cells = ;
-            linux-layer = ;
-            windows-layer = ;
-            macos-layer = ;
-            android-layer = ;
-            ios-layer = ;
-            default-layer = ;
+            #binding-cells = <0>;
+            linux-layer = <1>;
+            windows-layer = <2>;
+            macos-layer = <1>;
+            android-layer = <1>;
+            ios-layer = <1>;
+            default-layer = <1>;
         };
-
-        // Wenn du weitere custom behaviors hast, füge sie hier ebenfalls hinzu
     };
 };
