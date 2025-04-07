@@ -26,7 +26,7 @@ struct behavior_os_layer_config {
 static int behavior_os_layer_keymap_binding_pressed(struct zmk_behavior_binding *binding,
                                                     struct zmk_behavior_binding_event event) {
                                                         
-    LOG_DBG("Behavior '%s' pressed. Current hardcoded OS: %s", binding->behavior_dev->name, current_host_os);
+    LOG_DBG("Behavior os-layer pressed. Current hardcoded OS: %s", current_host_os);
     const struct behavior_os_layer_config *cfg = zmk_behavior_get_binding(binding->behavior_dev)->config;
     
     int layer_to_activate = cfg->default_layer;
