@@ -8,7 +8,7 @@
 #include <zmk/keymap.h>
 #include <zmk/behavior.h>
 
-//#if DT_HAS_COMPAT_STATUS_OKAY(DT_DRV_COMPAT)
+#if DT_HAS_COMPAT_STATUS_OKAY(DT_DRV_COMPAT)
 
 static char current_host_os[30] = "windows";
 
@@ -92,4 +92,4 @@ static const struct behavior_driver_api behavior_os_layer_driver_api = {
         POST_KERNEL, CONFIG_KERNEL_INIT_PRIORITY_DEFAULT, \
         &behavior_os_layer_driver_api);
 
-//#endif
+#endif
