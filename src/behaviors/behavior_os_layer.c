@@ -42,7 +42,8 @@ static int behavior_os_layer_keymap_binding_pressed(struct zmk_behavior_binding 
         layer_to_activate = cfg->default_layer;
     }
 
-    return zmk_keymap_layer_activate(layer_to_activate);
+    zmk_keymap_layer_activate(layer_to_activate);
+    return ZMK_BEHAVIOR_OPAQUE;
 }
 
 static int behavior_os_layer_keymap_binding_released(struct zmk_behavior_binding *binding,
@@ -66,7 +67,8 @@ static int behavior_os_layer_keymap_binding_released(struct zmk_behavior_binding
         layer_to_deactivate = cfg->default_layer;
     }
 
-    return zmk_keymap_layer_deactivate(layer_to_deactivate);
+    zmk_keymap_layer_deactivate(layer_to_deactivate);
+    return ZMK_BEHAVIOR_OPAQUE;
 }
 
 static const struct behavior_driver_api behavior_os_layer_driver_api = {
