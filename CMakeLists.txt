@@ -1,3 +1,6 @@
 if ((NOT CONFIG_ZMK_SPLIT) OR CONFIG_ZMK_SPLIT_ROLE_CENTRAL)
+    if(CONFIG_RAW_HID)
+    zephyr_library_sources(src/hid.c)
     target_sources(app PRIVATE src/behaviors/behavior_os_layer.c)
+  endif()
 endif()

@@ -1,0 +1,130 @@
+#define DT_DRV_COMPAT zmk_behavior_os_layer
+
+  #include <zephyr/device.h>
+  #include <drivers/behavior.h>
+  #include <zephyr/logging/log.h>
+
+  #include <zmk/keymap.h>
+  #include <zmk/behavior.h>
+  #include <zmk/events/usb_host_os.h> // Nötig für OS Erkennung (später)
+
+  // Logging Modul registrieren
+  LOG_MODULE_REGISTER(behavior_os_layer, CONFIG_ZMK_LOG_LEVEL_DBG); // Debug Level
+
+  #if DT_HAS_COMPAT_STATUS_OKAY(DT_DRV_COMPAT)
+
+  // --- Dein statischer OS String ---
+  // Zukünftig: Dieser sollte durch einen Listener auf zmk_usb_host_os_changed Events aktualisiert werden
+  static enum zmk_usb_host_os current_host_os = ZMK_USB_HOST_OS_WINDOWS; // Verwende Enum statt String
+
+  struct behavior_os_layer_config {
+      int linux_layer;
+      int windows_layer;
+      int macos_layer;
+      int android_layer;
+      int ios_layer;
+      int default_layer;
+  };
+
+  static int behavior_os_layer_keymap_binding_pressed(struct zmk_behavior_binding *binding,
+                                                      struct zmk_behavior_binding_event event) {
+
+      const struct device *dev = zmk_behavior_get_binding(binding->behavior_dev); // Geräteinstanz holen
+      const struct behavior_os_layer_config *cfg = dev->config;
+
+      int layer_to_activate = cfg->default_layer;
+
+      LOG_DBG("Behavior '%s' pressed. Current hardcoded OS: %d", binding->behavior_dev->name, current_host_os); // Log mit Gerätenamen
+
+      // Verwende das Enum für den Vergleich
+      switch (current_host_os) {
+      case ZMK_USB_HOST_OS_LINUX:
+          layer_to_activate = cfg->linux_layer;
+          break;
+      case ZMK_USB_HOST_OS_WINDOWS:
+          layer_to_activate = cfg->windows_layer;
+          break;
+      case ZMK_USB_HOST_OS_MAC OS:
+          layer_to_activate = cfg->macos_layer;
+          break;
+      case ZMK_USB_HOST_OS_ANDROID:
+          layer_to_activate = cfg->android_layer;
+          break;
+      case ZMK_USB_HOST_OS_IOS:
+          layer_to_activate = cfg->ios_layer;
+          break;
+      default: // ZMK_USB_HOST_OS_UNKNOWN oder andere
+          layer_to_activate = cfg->default_layer;
+          break;
+      }
+
+      LOG_INF("Activating layer: %d", layer_to_activate); // Info Level für wichtige Aktionen
+      zmk_keymap_layer_activate(layer_to_activate);
+      return ZMK_BEHAVIOR_OPAQUE; // Verhindert, dass andere Behaviors auf derselben Taste ausgelöst werden
+  }
+
+  static int behavior_os_layer_keymap_binding_released(struct zmk_behavior_binding *binding,
+                                                      struct zmk_behavior_binding_event event) {
+
+      const struct device *dev = zmk_behavior_get_binding(binding->behavior_dev);
+      const struct behavior_os_layer_config *cfg = dev->config;
+
+      int layer_to_deactivate = cfg->default_layer; // Default initialisieren
+
+      LOG_DBG("Behavior '%s' released.", binding->behavior_dev->name);
+
+      // Logik wie oben, um den zu deaktivierenden Layer zu finden
+      switch (current_host_os) {
+      case ZMK_USB_HOST_OS_LINUX:
+          layer_to_deactivate = cfg->linux_layer;
+          break;
+      case ZMK_USB_HOST_OS_WINDOWS:
+          layer_to_deactivate = cfg->windows_layer;
+          break;
+      // ... (andere OS) ...
+      default:
+          layer_to_deactivate = cfg->default_layer;
+          break;
+      }
+
+      LOG_INF("Deactivating layer: %d", layer_to_deactivate);
+      zmk_keymap_layer_deactivate(layer_to_deactivate);
+      return ZMK_BEHAVIOR_OPAQUE;
+  }
+
+  // --- Dein API Struct und INST Makro bleiben gleich ---
+  static const struct behavior_driver_api behavior_os_layer_driver_api = {
+       .binding_pressed = behavior_os_layer_keymap_binding_pressed,
+       .binding_released = behavior_os_layer_keymap_binding_released,
+       // .locality = BEHAVIOR_LOCALITY_CENTRAL, // Explizit setzen, dass es nur auf Central läuft (optional, da CMake das schon regelt)
+  };
+
+  // Initialisierungsfunktion hinzufügen (optional, aber gut für komplexere Behaviors)
+  static int behavior_os_layer_init(const struct device *dev) {
+      LOG_DBG("Behavior '%s' initialized.", dev->name);
+      // Hier könnte zukünftig der OS Event Listener registriert werden
+      return 0;
+  }
+
+
+  #define OSL_INST(n) \
+      static const struct behavior_os_layer_config behavior_os_layer_config_##n = { \
+          .linux_layer = DT_INST_PROP_OR(n, linux_layer, 0), \ // Verwende _OR mit Default 0
+          .windows_layer = DT_INST_PROP_OR(n, windows_layer, 0), \
+          .macos_layer = DT_INST_PROP_OR(n, macos_layer, 0), \
+          .android_layer = DT_INST_PROP_OR(n, android_layer, 0), \
+          .ios_layer = DT_INST_PROP_OR(n, ios_layer, 0), \
+          .default_layer = DT_INST_PROP_OR(n, default_layer, 0), \
+      }; \
+      BEHAVIOR_DT_INST_DEFINE(n, \
+          behavior_os_layer_init, /* Init Funktion */ \
+          NULL, /* PM Funktion (optional) */\
+          NULL, /* Keine privaten Daten */ \
+          &behavior_os_layer_config_##n, /* Konfiguration */ \
+          POST_KERNEL, /* Init Phase */\
+          CONFIG_KERNEL_INIT_PRIORITY_DEFAULT, /* Priorität */ \
+          &behavior_os_layer_driver_api /* API */);
+
+  DT_INST_FOREACH_STATUS_OKAY(OSL_INST) // Stellt sicher, dass für jede Instanz der Code generiert wird
+
+  #endif // DT_HAS_COMPAT_STATUS_OKAY(DT_DRV_COMPAT)

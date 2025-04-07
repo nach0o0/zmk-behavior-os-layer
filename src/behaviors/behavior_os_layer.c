@@ -1,5 +1,6 @@
-#define DT_DRV_COMPAT zmk_behavior_os_layer
+#ifdef CONFIG_RAW_HID
 
+#define DT_DRV_COMPAT zmk_behavior_os_layer
 
 #include <zephyr/device.h>
 #include <drivers/behavior.h>
@@ -7,12 +8,11 @@
 
 #include <zmk/keymap.h>
 #include <zmk/behavior.h>
+#include <hid.h>
 
 LOG_MODULE_REGISTER(behavior_os_layer, CONFIG_ZMK_LOG_LEVEL);
 
 #if DT_HAS_COMPAT_STATUS_OKAY(DT_DRV_COMPAT)
-
-static char current_host_os[30] = "windows";
 
 struct behavior_os_layer_config {
     int linux_layer;
@@ -23,23 +23,25 @@ struct behavior_os_layer_config {
     int default_layer;
 };
 
+static char os_layer_current_host_os[30] = "unknown";
+
 static int behavior_os_layer_keymap_binding_pressed(struct zmk_behavior_binding *binding,
                                                     struct zmk_behavior_binding_event event) {
                                                         
-    LOG_DBG("Behavior os-layer pressed. Current hardcoded OS: %s", current_host_os);
+    LOG_DBG("Behavior os-layer pressed. Current host OS: %s", os_layer_current_host_os);
     const struct behavior_os_layer_config *cfg = zmk_behavior_get_binding(binding->behavior_dev)->config;
     
     int layer_to_activate = cfg->default_layer;
 
-    if (strcmp(current_host_os, "linux") == 0) {
+    if (strcmp(os_layer_current_host_os, "linux") == 0) {
         layer_to_activate = cfg->linux_layer;
-    } else if (strcmp(current_host_os, "windows") == 0) {
+    } else if (strcmp(os_layer_current_host_os, "windows") == 0) {
         layer_to_activate = cfg->windows_layer;
-    } else if (strcmp(current_host_os, "macos") == 0) {
+    } else if (strcmp(os_layer_current_host_os, "macos") == 0) {
         layer_to_activate = cfg->macos_layer;
-    } else if (strcmp(current_host_os, "android") == 0) {
+    } else if (strcmp(os_layer_current_host_os, "android") == 0) {
         layer_to_activate = cfg->android_layer;
-    } else if (strcmp(current_host_os, "ios") == 0) {
+    } else if (strcmp(os_layer_current_host_os, "ios") == 0) {
         layer_to_activate = cfg->ios_layer;
     } else {
         layer_to_activate = cfg->default_layer;
@@ -57,15 +59,15 @@ static int behavior_os_layer_keymap_binding_released(struct zmk_behavior_binding
 
     int layer_to_deactivate = cfg->default_layer;
 
-    if (strcmp(current_host_os, "linux") == 0) {
+    if (strcmp(os_layer_current_host_os, "linux") == 0) {
         layer_to_deactivate = cfg->linux_layer;
-    } else if (strcmp(current_host_os, "windows") == 0) {
+    } else if (strcmp(os_layer_current_host_os, "windows") == 0) {
         layer_to_deactivate = cfg->windows_layer;
-    } else if (strcmp(current_host_os, "macos") == 0) {
+    } else if (strcmp(os_layer_current_host_os, "macos") == 0) {
         layer_to_deactivate = cfg->macos_layer;
-    } else if (strcmp(current_host_os, "android") == 0) {
+    } else if (strcmp(os_layer_current_host_os, "android") == 0) {
         layer_to_deactivate = cfg->android_layer;
-    } else if (strcmp(current_host_os, "ios") == 0) {
+    } else if (strcmp(os_layer_current_host_os, "ios") == 0) {
         layer_to_deactivate = cfg->ios_layer;
     } else {
         layer_to_deactivate = cfg->default_layer;
@@ -98,5 +100,24 @@ static const struct behavior_driver_api behavior_os_layer_driver_api = {
         &behavior_os_layer_driver_api);
 
 DT_INST_FOREACH_STATUS_OKAY(OSL_INST)
+
+static int os_notification_listener(const zmk_event_t *eh) {
+    const struct os_notification *event = as_os_notification(eh);
+    if (!event) {
+        return ZMK_EV_EVENT_BUBBLE;
+    }
+
+    strncpy(os_layer_current_host_os, event->host_os, sizeof(os_layer_current_host_os) - 1);
+    os_layer_current_host_os[sizeof(os_layer_current_host_os) - 1] = '\0';
+
+    LOG_INF("OS changed: %s", os_layer_current_host_os);
+
+    return ZMK_EV_EVENT_BUBBLE;
+}
+
+ZMK_LISTENER(behavior_os_layer, os_notification_listener);
+ZMK_SUBSCRIPTION(behavior_os_layer, os_notification);
+
+#endif
 
 #endif
