@@ -97,4 +97,6 @@ static const struct behavior_driver_api behavior_os_layer_driver_api = {
         POST_KERNEL, CONFIG_KERNEL_INIT_PRIORITY_DEFAULT, \
         &behavior_os_layer_driver_api);
 
+DT_INST_FOREACH_STATUS_OKAY(OSL_INST)
+
 #endif
