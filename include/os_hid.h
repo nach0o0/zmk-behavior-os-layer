@@ -4,8 +4,6 @@
 
 #ifdef CONFIG_RAW_HID
 
-extern const char *current_host_os;
-
 struct is_connected_notification {
     bool value;
 };
@@ -19,21 +17,9 @@ struct time_notification {
 
 ZMK_EVENT_DECLARE(time_notification);
 
-struct volume_notification {
-    uint8_t value;
-};
-
-ZMK_EVENT_DECLARE(volume_notification);
-
 struct os_notification {
-    char host_os[30];
+    char current_host_os[30];
 };
 
 ZMK_EVENT_DECLARE(os_notification);
-
-struct layout_notification {
-    uint8_t value;
-};
-
-ZMK_EVENT_DECLARE(layout_notification);
 #endif
