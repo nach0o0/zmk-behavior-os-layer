@@ -11,6 +11,7 @@
 #if DT_HAS_COMPAT_STATUS_OKAY(DT_DRV_COMPAT)
 
 static char current_host_os[30] = "windows";
+static char windows_host_os[30] = "windows";
 
 struct behavior_os_layer_config {
     int linux_layer;
@@ -30,7 +31,7 @@ static int behavior_os_layer_keymap_binding_pressed(struct zmk_behavior_binding 
 
     if (strcmp(current_host_os, "linux") == 0) {
         layer_to_activate = cfg->linux_layer;
-    } else if (strcmp(current_host_os, "windows") == 0) {
+    } else if (strcmp(current_host_os, windows_host_os) == 0) {
         layer_to_activate = cfg->windows_layer;
     } else if (strcmp(current_host_os, "macos") == 0) {
         layer_to_activate = cfg->macos_layer;
