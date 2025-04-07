@@ -107,7 +107,7 @@ static int os_notification_listener(const zmk_event_t *eh) {
         return ZMK_EV_EVENT_BUBBLE;
     }
 
-    strncpy(os_layer_current_host_os, event->host_os, sizeof(os_layer_current_host_os) - 1);
+    strncpy(os_layer_current_host_os, event->current_host_os, sizeof(os_layer_current_host_os) - 1);
     os_layer_current_host_os[sizeof(os_layer_current_host_os) - 1] = '\0';
 
     LOG_INF("OS changed: %s", os_layer_current_host_os);
